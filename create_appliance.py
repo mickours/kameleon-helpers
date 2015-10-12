@@ -114,7 +114,7 @@ def file_type(path):
     output, _ = proc.communicate()
     if proc.returncode:
         raise subprocess.CalledProcessError(proc.returncode, ' '.join(cmd))
-    return output.split(':')[1].strip()
+    return str(output).split(':')[1].strip()
 
 
 def qemu_convert(disk, output_fmt, output_filename):
