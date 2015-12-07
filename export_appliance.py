@@ -37,28 +37,28 @@ def which(command):
             if is_exe(exe_file):
                 return exe_file
 
-    raise ValueError("Command '%s' not found" % command)
+    raise ValueError("Command '{0!s}' not found".format(command))
 
 
 def tar_convert(disk, output, excludes, compression_level):
     """Convert image to a tar rootfs archive."""
     if compression_level in ("best", "fast"):
-        compression_level_opt = "--%s" % compression_level
+        compression_level_opt = "--{0!s}".format(compression_level)
     else:
-        compression_level_opt = "-%s" % compression_level
+        compression_level_opt = "-{0!s}".format(compression_level)
 
     compr = ""
     if output.endswith(('tar.gz', 'tgz')):
-        compr = "| %s %s" % (which("gzip"), compression_level_opt)
+        compr = "| {0!s} {1!s}".format(which("gzip"), compression_level_opt)
     elif output.endswith(('tar.bz2', 'tbz')):
-        compr = "| %s %s" % (which("bzip2"), compression_level_opt)
+        compr = "| {0!s} {1!s}".format(which("bzip2"), compression_level_opt)
     elif output.endswith(('tar.xz', 'txz')):
-        compr = "| %s %s -c -" % (which("xz"), compression_level_opt)
+        compr = "| {0!s} {1!s} -c -".format(which("xz"), compression_level_opt)
     elif output.endswith(('tar.lzo', 'tzo')):
-        compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
+        compr = "| {0!s} {1!s} -c -".format(which("lzop"), compression_level_opt)
 
     tar_options_list = ["numericowner:true",
-                        "excludes:\"%s\"" % ' '.join(excludes)]
+                        "excludes:\"{0!s}\"".format(' '.join(excludes))]
     tar_options = ' '.join(tar_options_list)
     cmd = which("guestfish") + \
         " --ro -i tar-out -a %s / - %s %s > %s"
@@ -87,7 +87,7 @@ def run_guestfish_script(disk, script, mount=False):
     if mount:
         args.append('-i')
     else:
-        script = "run\n%s" % script
+        script = "run\n{0!s}".format(script)
     proc = subprocess.Popen(args,
                             stdin=subprocess.PIPE,
                             env=os.environ.copy())
@@ -99,12 +99,12 @@ def run_guestfish_script(disk, script, mount=False):
 def guestfish_zerofree(filename):
     """Fill free space with zero"""
     logger.info(guestfish_zerofree.__doc__)
-    fs = subprocess.check_output("virt-list-filesystems %s" % filename,
+    fs = subprocess.check_output("virt-list-filesystems {0!s}".format(filename),
                                  stderr=subprocess.STDOUT,
                                  shell=True,
                                  env=os.environ.copy())
-    logger.info('\n'.join(('  `--> %s' % i for i in fs.split())))
-    script = '\n'.join(('zerofree %s' % i for i in fs.split()))
+    logger.info('\n'.join(('  `--> {0!s}'.format(i) for i in fs.split())))
+    script = '\n'.join(('zerofree {0!s}'.format(i) for i in fs.split()))
     run_guestfish_script(filename, script, mount=False)
 
 
@@ -122,10 +122,10 @@ def convert_disk_image(args):
 
     for fmt in args.formats:
         if fmt in (tar_formats + disk_formats):
-            output_filename = "%s.%s" % (output, fmt)
+            output_filename = "{0!s}.{1!s}".format(output, fmt)
             if output_filename == filename:
                 continue
-            logger.info("Creating %s" % output_filename)
+            logger.info("Creating {0!s}".format(output_filename))
             try:
                 if fmt in tar_formats:
                     tar_convert(filename, output_filename,
@@ -134,14 +134,14 @@ def convert_disk_image(args):
                 else:
                     qemu_convert(filename, fmt, output_filename)
             except ValueError as exp:
-                logger.error("Error: %s" % exp)
+                logger.error("Error: {0!s}".format(exp))
 
 
 if __name__ == '__main__':
     allowed_formats = tar_formats + disk_formats
     allowed_formats_help = 'Allowed values are ' + ', '.join(allowed_formats)
 
-    allowed_levels = ["%d" % i for i in range(1, 10)] + ["best", "fast"]
+    allowed_levels = ["{0:d}".format(i) for i in range(1, 10)] + ["best", "fast"]
     allowed_levels_helps = 'Allowed values are ' + ', '.join(allowed_levels)
 
     parser = argparse.ArgumentParser(
@@ -183,5 +183,5 @@ if __name__ == '__main__':
 
         convert_disk_image(args)
     except Exception as exc:
-        sys.stderr.write(u"\nError: %s\n" % exc)
+        sys.stderr.write(u"\nError: {0!s}\n".format(exc))
         sys.exit(1)

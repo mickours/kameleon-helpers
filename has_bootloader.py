@@ -33,7 +33,7 @@ def which(command):
             if is_exe(exe_file):
                 return exe_file
 
-    raise ValueError("Command '%s' not found" % command)
+    raise ValueError("Command '{0!s}' not found".format(command))
 
 
 def check_bootloader(disk):
@@ -50,7 +50,7 @@ def check_bootloader(disk):
     if proc.returncode:
         return False
 
-    output = "%s\n%s" % (stdout.lower(), stderr.lower())
+    output = "{0!s}\n{1!s}".format(stdout.lower(), stderr.lower())
     print(output)
     for word in ("mbr", "bootloader", "boot sector"):
         if word in output:
@@ -74,5 +74,5 @@ if __name__ == '__main__':
             else:
                 sys.exit(1)
     except Exception as exc:
-        sys.stderr.write(u"\nError: %s\n" % exc)
+        sys.stderr.write(u"\nError: {0!s}\n".format(exc))
         sys.exit(1)

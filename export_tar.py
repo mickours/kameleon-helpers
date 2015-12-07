@@ -35,28 +35,28 @@ def which(command):
             if is_exe(exe_file):
                 return exe_file
 
-    raise ValueError("Command '%s' not found" % command)
+    raise ValueError("Command '{0!s}' not found".format(command))
 
 
 def tar_convert(directory, output, excludes, compression_level):
     """Convert image to a tar rootfs archive."""
     if compression_level in ("best", "fast"):
-        compression_level_opt = "--%s" % compression_level
+        compression_level_opt = "--{0!s}".format(compression_level)
     else:
-        compression_level_opt = "-%s" % compression_level
+        compression_level_opt = "-{0!s}".format(compression_level)
 
     compr = ""
     if output.endswith(('tar.gz', 'tgz')):
-        compr = "| %s %s" % (which("gzip"), compression_level_opt)
+        compr = "| {0!s} {1!s}".format(which("gzip"), compression_level_opt)
     elif output.endswith(('tar.bz2', 'tbz')):
-        compr = "| %s %s" % (which("bzip2"), compression_level_opt)
+        compr = "| {0!s} {1!s}".format(which("bzip2"), compression_level_opt)
     elif output.endswith(('tar.xz', 'txz')):
-        compr = "| %s %s -c -" % (which("xz"), compression_level_opt)
+        compr = "| {0!s} {1!s} -c -".format(which("xz"), compression_level_opt)
     elif output.endswith(('tar.lzo', 'tzo')):
-        compr = "| %s %s -c -" % (which("lzop"), compression_level_opt)
+        compr = "| {0!s} {1!s} -c -".format(which("lzop"), compression_level_opt)
 
     tar_options_list = ["--numeric-owner", "--one-file-system"
-                        ' '.join(('--exclude="%s"' % s for s in excludes))]
+                        ' '.join(('--exclude="{0!s}"'.format(s) for s in excludes))]
     tar_options = ' '.join(tar_options_list)
     cmd = which("tar") + " -cf - %s -C %s $(cd %s; ls -A) %s > %s"
     cmd = cmd % (tar_options, directory, directory, compr, output)
@@ -74,8 +74,8 @@ def export(args):
 
     for fmt in args.formats:
         if fmt in tar_formats:
-            output_filename = "%s.%s" % (output, fmt)
-            logger.info("Creating %s" % output_filename)
+            output_filename = "{0!s}.{1!s}".format(output, fmt)
+            logger.info("Creating {0!s}".format(output_filename))
             if output_filename == filename:
                 logger.error("Please give a different output filename.")
             else:
@@ -84,14 +84,14 @@ def export(args):
                                 args.tar_excludes,
                                 args.tar_compression_level)
                 except ValueError as exp:
-                    logger.error("Error: %s" % exp)
+                    logger.error("Error: {0!s}".format(exp))
 
 
 if __name__ == '__main__':
     allowed_formats = tar_formats
     allowed_formats_help = 'Allowed values are ' + ', '.join(allowed_formats)
 
-    allowed_levels = ["%d" % i for i in range(1, 10)] + ["best", "fast"]
+    allowed_levels = ["{0:d}".format(i) for i in range(1, 10)] + ["best", "fast"]
     allowed_levels_helps = 'Allowed values are ' + ', '.join(allowed_levels)
 
     parser = argparse.ArgumentParser(
@@ -129,5 +129,5 @@ if __name__ == '__main__':
         logger.addHandler(handler)
         export(args)
     except Exception as exc:
-        sys.stderr.write(u"\nError: %s\n" % exc)
+        sys.stderr.write(u"\nError: {0!s}\n".format(exc))
         sys.exit(1)

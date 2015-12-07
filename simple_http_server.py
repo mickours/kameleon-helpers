@@ -94,7 +94,7 @@ class HTTPServerDaemon(object):
             handler = SimpleHTTPServer.SimpleHTTPRequestHandler
             httpd = SocketServer.TCPServer((host, port), handler)
 
-        print("Running on http://%s:%s/" % (host, port))
+        print("Running on http://{0!s}:{1!s}/".format(host, port))
         os.chdir(self.root)
         try:
             httpd.serve_forever()
@@ -125,5 +125,5 @@ if __name__ == '__main__':
         else:
             http_server.run(args.bind, args.port)
     except Exception as exc:
-        sys.stderr.write(u"\nError: %s\n" % exc)
+        sys.stderr.write(u"\nError: {0!s}\n".format(exc))
         sys.exit(1)

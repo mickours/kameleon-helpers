@@ -32,5 +32,5 @@ if __name__ == '__main__':
                 rv = "yes"
         print(rv)
     except Exception as exc:
-        sys.stderr.write(u"\nError: %s\n" % exc)
+        sys.stderr.write(u"\nError: {0!s}\n".format(exc))
         sys.exit(1)
